@@ -1,6 +1,6 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from main.serializers import *
@@ -29,12 +29,11 @@ class FakeNewsAPIListCreate(generics.ListCreateAPIView):
                                                correct=correct)
                 return Response({'news': model_to_dict(news)})
             elif request.data['description'] != '' and len(request.data['description']) < 25:
-                return Response({'message': 'Too short news'})
+                return Response({'Error': 'Too short news'}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'message': 'Empty string'})
+                return Response({'Error': 'Empty string'}, status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response({'Error': 'Error in response(description is required)'})
-
+            return Response({'Error': 'Error in response(description is required)'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FakeCardGameAPIList(generics.ListAPIView):
