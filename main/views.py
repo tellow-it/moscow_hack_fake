@@ -22,11 +22,19 @@ class FakeNewsAPIListCreate(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         answer = True  # что вернет ml
         correct = random.randint(1, 100)  # что вернет ml
-        news = FakeNews.objects.create(description=request.data['description'],
-                                       answer=answer,
-                                       correct=correct)
+        try:
+            if request.data['description'] != '' and len(request.data['description']) > 25:
+                news = FakeNews.objects.create(description=request.data['description'],
+                                               answer=answer,
+                                               correct=correct)
+                return Response({'news': model_to_dict(news)})
+            elif request.data['description'] != '' and len(request.data['description']) < 25:
+                return Response({'message': 'Too short news'})
+            else:
+                return Response({'message': 'Empty string'})
+        except:
+            return Response({'Error': 'Error in response(description is required)'})
 
-        return Response({'news': model_to_dict(news)})
 
 
 class FakeCardGameAPIList(generics.ListAPIView):
